@@ -1,6 +1,6 @@
 baseURL: ""
 languageCode: en-us
-title: ev-log
+title: ev0-log
 theme: "hugo-theme-m10c"
 
 #menu:
