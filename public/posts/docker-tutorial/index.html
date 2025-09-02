@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="en-us">
+  <head>
+    <title>Docker Tutorial // ev-log</title>
+    <link rel="shortcut icon" href="/favicon.ico" />
+    <meta charset="utf-8" />
+    <meta name="generator" content="Hugo 0.149.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="author" content="John Doe" />
+    <meta name="description" content="" />
+    <link rel="stylesheet" href="/css/main.min.5b1fcc8902588589c4767187402a3c29f8b8d7a6fdef6d9f8f77045bb0d14fee.css" />
+    
+
+    
+    
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Docker Tutorial">
+  <meta name="twitter:description" content="Most basic Docker tutorial Let’s have a look at Docker! For this purpose we are going to run a simple Flask application from an Docker container. At the end we will recap some basic terminology related to Docker. I have Docker already installed and will not go through the installation process, you can follow the official Docker documentation. First we have to look for a base image we can use for our purposes. We’ll create a simple “Hello World” site with Flask, a Python web framework, so let’s search for an image on the Docker Hub. We will use the official Python image:">
+
+    <meta property="og:url" content="/posts/docker-tutorial/">
+  <meta property="og:site_name" content="ev-log">
+  <meta property="og:title" content="Docker Tutorial">
+  <meta property="og:description" content="Most basic Docker tutorial Let’s have a look at Docker! For this purpose we are going to run a simple Flask application from an Docker container. At the end we will recap some basic terminology related to Docker. I have Docker already installed and will not go through the installation process, you can follow the official Docker documentation. First we have to look for a base image we can use for our purposes. We’ll create a simple “Hello World” site with Flask, a Python web framework, so let’s search for an image on the Docker Hub. We will use the official Python image:">
+  <meta property="og:locale" content="en_us">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2023-03-14T08:10:40+02:00">
+    <meta property="article:modified_time" content="2023-03-14T08:10:40+02:00">
+
+
+  </head>
+  <body>
+    <header class="app-header">
+      <a href="/"><img class="app-header-avatar" src="/avatar.jpg" alt="John Doe" /></a>
+      <span class="app-header-title">ev-log</span>
+      <p>Welcome to my blog! I&#39;m a hobbyist and will mostly write about basic topics related to programming and devops as I learn along the way.</p>
+      <div class="app-header-social">
+        
+          <a href="https://github.com/eh0-91" target="_blank" rel="noreferrer noopener me">
+            <svg class="icon icon-github" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><title>github</title><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>
+          </a>
+        
+      </div>
+    </header>
+    <main class="app-container">
+      
+  <article class="post">
+    <header class="post-header">
+      <h1 class ="post-title">Docker Tutorial</h1>
+      <div class="post-meta">
+        <div>
+          <svg class="icon icon-calendar" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><title>calendar</title><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+          Mar 14, 2023
+        </div>
+        <div>
+          <svg class="icon icon-clock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><title>clock</title><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+          5 min read
+        </div>
+      </div>
+    </header>
+    <div class="post-content">
+      <h1 id="most-basic-docker-tutorial">Most basic Docker tutorial</h1>
+<p>Let&rsquo;s have a look at Docker! For this purpose we are going to run a simple Flask application from an Docker container.
+At the end we will recap some basic terminology related to Docker. I have Docker already installed
+and will not go through the installation process,
+you can follow the official <a href="https://docs.docker.com/engine/install/">Docker documentation</a>. First we have to look
+for a base image we can use for our purposes. We&rsquo;ll create a simple &ldquo;Hello World&rdquo; site with Flask,
+a Python web framework, so let&rsquo;s search for an image on the <a href="https://hub.docker.com/">Docker Hub</a>.
+We will use the official Python image:</p>
+<pre tabindex="0"><code>docker pull python
+</code></pre><p>Docker will now pull the latest Python image and after it&rsquo;s done we can check it with</p>
+<pre tabindex="0"><code>docker images
+</code></pre><p>If you don&rsquo;t have any other images installed the terminal output should look like this</p>
+<pre tabindex="0"><code>REPOSITORY    TAG         IMAGE ID       CREATED       SIZE
+python        latest      0a6cd0db41a4   13 days ago   920MB
+</code></pre><p>We can now run our Docker image, but by default nothing will happen, we only have the base image. Let&rsquo;s give
+it an extra command:</p>
+<pre tabindex="0"><code>docker run python echo &#34;Hello From Docker&#34;
+</code></pre><p>You should see &ldquo;Hello From Docker&rdquo; printed to your terminal. The Docker client ran our Docker container,
+executed our command and exited after finishing, so we have no running Docker container.
+We can check for running Docker containers with</p>
+<pre tabindex="0"><code>docker ps
+</code></pre><p>or</p>
+<pre tabindex="0"><code>docker ps -a
+</code></pre><p>if we want to see which containers we have run. In our case the output would be</p>
+<pre tabindex="0"><code>CONTAINER ID   IMAGE         COMMAND                  CREATED         STATUS                     PORTS     NAMES
+36f40515bd7b   python        &#34;echo &#39;Hello From Do…&#34;   3 minutes ago   Exited (0) 3 minutes ago             nice_wozniak
+</code></pre><p>We can keep our container running with, for example</p>
+<pre tabindex="0"><code>docker run -it python
+</code></pre><p>Now you should be inside the interactive mode of your Python installation inside your Docker container.
+Feel free to try out some commands and exit with &ldquo;exit()&rdquo;. In case you want to delete a specific container, just run</p>
+<pre tabindex="0"><code>docker rm 36f40515bd7b
+</code></pre><p>&ldquo;rm&rdquo; is the remove command followed by one or more container IDs. You can see the container ID in our previous example
+when running &ldquo;docker ps -a&rdquo;. There are more advanced ways to do this so you don&rsquo;t have to type every single
+container ID by hand, but for the purpose of this tutorial this should be fine. If you want to delete all containers
+you can run &ldquo;docker container prune&rdquo;, you will be asked if you really want to delete all stopped containers so you
+don&rsquo;t delete them all by mistake. If there are images you don&rsquo;t longer need you can delete them by running
+&ldquo;docker rmi&rdquo;. Now let&rsquo;s install Flask in our project folder, outside of our container. I created a folder
+&ldquo;docker_test&rdquo;, inside we run the following commands:</p>
+<pre tabindex="0"><code>python3 -m venv venv
+source ./venv/bin/activate
+</code></pre><p>We created a virtual environment for our Flask app, now we install Flask itself and write our Hello World website:</p>
+<pre tabindex="0"><code>pip install Flask
+pip freeze &gt; requirements.txt
+touch hello.py
+</code></pre><p>Inside the hello.py we write</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">from</span> flask <span style="color:#f92672">import</span> Flask
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>app <span style="color:#f92672">=</span> Flask(__name__)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@app.route</span>(<span style="color:#e6db74">&#34;/&#34;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">hello_world</span>():
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> <span style="color:#e6db74">&#34;&lt;p&gt;Hello from Flask!&lt;/p&gt;&#34;</span>
+</span></span></code></pre></div><p>We can now run &ldquo;flask &ndash;app hello run&rdquo; to run our Flask app and see an output like this</p>
+<pre tabindex="0"><code> * Serving Flask app &#39;hello&#39;
+ * Debug mode: off
+WARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.
+ * Running on http://127.0.0.1:5000
+Press CTRL+C to quit
+127.0.0.1 - - [05/Jun/2023 11:39:20] &#34;GET / HTTP/1.1&#34; 200 -
+127.0.0.1 - - [05/Jun/2023 11:39:20] &#34;GET /favicon.ico HTTP/1.1&#34; 404 -
+</code></pre><p>We can copy the adress our app is running on, in our case &ldquo;http://127.0.0.1:5000&rdquo;, to our browser and we will
+see a simple &ldquo;Hello from Flask!&rdquo; on the page. Now it&rsquo;s time to set up our Docker file. First shutdown our Flask app
+and create a file named &ldquo;Dockerfile&rdquo;. Inside we write</p>
+<pre tabindex="0"><code>FROM python:latest
+
+# directory for the app
+WORKDIR /usr/src/app
+
+# copy files to container
+COPY . .
+
+# install dependencies
+RUN pip install --no-cache-dir -r requirements.txt
+
+# define port
+EXPOSE 5000
+
+# run command inside the container
+CMD [&#34;flask&#34;, &#34;--app&#34;, &#34;hello&#34;, &#34;run&#34;, &#34;--host=0.0.0.0&#34;]
+</code></pre><p>and then run &ldquo;docker build -t yourusername/catnip .&rdquo; to build our image. Insert your own username, obviously.
+After it&rsquo;s done we can run &ldquo;docker run -p 8888:5000 yourusername/catnip&rdquo; and see the following output</p>
+<pre tabindex="0"><code> * Serving Flask app &#39;hello&#39;
+ * Debug mode: off
+WARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://172.17.0.2:5000
+Press CTRL+C to quit
+</code></pre><p>If we go to our browser and visit 172.17.0.2:5000 we will see our page displayed! Now that we have our super fancy
+website running, let&rsquo;s recap some terminology we used in our tutorial:</p>
+<h1 id="image">Image</h1>
+<p>A base image we use to build our container. Examples include Ubuntu, Python, Busybox.</p>
+<h1 id="client">Client</h1>
+<p>Client in this context means the Docker CLI tool which we use to interact with a daemon.</p>
+<h1 id="daemon">Daemon</h1>
+<p>The service running on your own machine which manages Docker containers, including building, running and distributing
+them.</p>
+<h1 id="container">Container</h1>
+<p>A Docker container is similar to a virtual machine, just more lightweight. We use it to
+provide a layer of abstraction/isolation from our OS and environment, so when we run our container our application
+inside the container doesn&rsquo;t care about the OS it runs on (as long Docker itself is supported).</p>
+<h1 id="registry">Registry</h1>
+<p>A Docker registry hosts Docker images, in our case we used the official Docker Hub but you can use others, including
+hosting your own registry.</p>
+
+    </div>
+    <div class="post-footer">
+      
+    </div>
+  </article>
+
+    </main>
+  </body>
+</html>

@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en-us">
+  <head>
+    <title>HackerRank: List Replication in Haskell // ev-log</title>
+    <link rel="shortcut icon" href="/favicon.ico" />
+    <meta charset="utf-8" />
+    <meta name="generator" content="Hugo 0.149.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="author" content="John Doe" />
+    <meta name="description" content="" />
+    <link rel="stylesheet" href="/css/main.min.5b1fcc8902588589c4767187402a3c29f8b8d7a6fdef6d9f8f77045bb0d14fee.css" />
+    
+
+    
+    
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="HackerRank: List Replication in Haskell">
+  <meta name="twitter:description" content="Problem description Given a list, repeat each element in the list n amount of times. The input and output portions will be handled automatically by the grader. You need to write a function with the recommended method signature. Input Format The first line contains the integer S where S is the number of times you need to repeat the elements. The next X lines each contain an integer. These are the X elements in the array. We want to iterate over the elements of the list and repeat each element n amount of times:">
+
+    <meta property="og:url" content="/posts/hackerrank-haskell/">
+  <meta property="og:site_name" content="ev-log">
+  <meta property="og:title" content="HackerRank: List Replication in Haskell">
+  <meta property="og:description" content="Problem description Given a list, repeat each element in the list n amount of times. The input and output portions will be handled automatically by the grader. You need to write a function with the recommended method signature. Input Format The first line contains the integer S where S is the number of times you need to repeat the elements. The next X lines each contain an integer. These are the X elements in the array. We want to iterate over the elements of the list and repeat each element n amount of times:">
+  <meta property="og:locale" content="en_us">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2022-10-28T19:20:11+02:00">
+    <meta property="article:modified_time" content="2022-10-28T19:20:11+02:00">
+
+
+  </head>
+  <body>
+    <header class="app-header">
+      <a href="/"><img class="app-header-avatar" src="/avatar.jpg" alt="John Doe" /></a>
+      <span class="app-header-title">ev-log</span>
+      <p>Welcome to my blog! I&#39;m a hobbyist and will mostly write about basic topics related to programming and devops as I learn along the way.</p>
+      <div class="app-header-social">
+        
+          <a href="https://github.com/eh0-91" target="_blank" rel="noreferrer noopener me">
+            <svg class="icon icon-github" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><title>github</title><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>
+          </a>
+        
+      </div>
+    </header>
+    <main class="app-container">
+      
+  <article class="post">
+    <header class="post-header">
+      <h1 class ="post-title">HackerRank: List Replication in Haskell</h1>
+      <div class="post-meta">
+        <div>
+          <svg class="icon icon-calendar" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><title>calendar</title><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+          Oct 28, 2022
+        </div>
+        <div>
+          <svg class="icon icon-clock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><title>clock</title><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+          4 min read
+        </div>
+      </div>
+    </header>
+    <div class="post-content">
+      <h1 id="problem-description">Problem description</h1>
+<pre tabindex="0"><code>Given a list, repeat each element in the list n amount of times. The input and output portions will be 
+handled automatically by the grader. You need to write a function with the recommended method signature.
+
+Input Format
+The first line contains the integer S where S is the number of times you need to repeat the elements.
+The next X lines each contain an integer. These are the X elements in the array.
+</code></pre><p>We want to iterate over the elements of the list and repeat each element n amount of times:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-haskell" data-lang="haskell"><span style="display:flex;"><span><span style="color:#a6e22e">f</span> n arr <span style="color:#f92672">=</span>
+</span></span><span style="display:flex;"><span>    map (replicate n) arr 
+</span></span></code></pre></div><p>Easy, right!? This doesn&rsquo;t give us the result we want though, because it creates lists of the repeated elements. This time with example inputs:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-haskell" data-lang="haskell"><span style="display:flex;"><span><span style="color:#a6e22e">ghci</span><span style="color:#f92672">&gt;</span> map (replicate <span style="color:#ae81ff">3</span>) [<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">3</span>]
+</span></span><span style="display:flex;"><span>[[<span style="color:#ae81ff">1</span>,<span style="color:#ae81ff">1</span>,<span style="color:#ae81ff">1</span>],[<span style="color:#ae81ff">2</span>,<span style="color:#ae81ff">2</span>,<span style="color:#ae81ff">2</span>],[<span style="color:#ae81ff">3</span>,<span style="color:#ae81ff">3</span>,<span style="color:#ae81ff">3</span>]]
+</span></span></code></pre></div><p>So we need to flatten the result. Haskell has a built-in function to concat the resulting lists which we will use instead of map.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-haskell" data-lang="haskell"><span style="display:flex;"><span><span style="color:#a6e22e">ghci</span><span style="color:#f92672">&gt;</span> concatMap (replicate <span style="color:#ae81ff">3</span>) [<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">3</span>]
+</span></span><span style="display:flex;"><span>[<span style="color:#ae81ff">1</span>,<span style="color:#ae81ff">1</span>,<span style="color:#ae81ff">1</span>,<span style="color:#ae81ff">2</span>,<span style="color:#ae81ff">2</span>,<span style="color:#ae81ff">2</span>,<span style="color:#ae81ff">3</span>,<span style="color:#ae81ff">3</span>,<span style="color:#ae81ff">3</span>]
+</span></span></code></pre></div><p>This works! It&rsquo;s a straightforward solution that builds on the naive (and not correct!) first attempt but maybe we can solve it in a nicer way.
+Let&rsquo;s look at the concatMap function.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-haskell" data-lang="haskell"><span style="display:flex;"><span><span style="color:#a6e22e">ghci</span><span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">:</span>info concatMap
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">concatMap</span> <span style="color:#f92672">::</span> <span style="color:#66d9ef">Foldable</span> t <span style="color:#f92672">=&gt;</span> (a <span style="color:#f92672">-&gt;</span> [b]) <span style="color:#f92672">-&gt;</span> t a <span style="color:#f92672">-&gt;</span> [b]
+</span></span><span style="display:flex;"><span>  	<span style="color:#75715e">-- Defined in ‘Data.Foldable’</span>
+</span></span></code></pre></div><p>So concatMap takes a function a -&gt; [b] (in our case replicate) and a container with the Foldable constraint (in our case a list)
+and returns the concatenated lists, each produced by the function, as a result. Great! Foldable is a type class, do other type classes also apply to list?</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-haskell" data-lang="haskell"><span style="display:flex;"><span><span style="color:#a6e22e">ghci</span><span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">:</span>info <span style="color:#66d9ef">[]</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">type</span> <span style="color:#66d9ef">[]</span> <span style="color:#f92672">::</span> <span style="color:#f92672">*</span> <span style="color:#f92672">-&gt;</span> <span style="color:#f92672">*</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">data</span> <span style="color:#66d9ef">[]</span> a <span style="color:#f92672">=</span> <span style="color:#66d9ef">[]</span> <span style="color:#f92672">|</span> a <span style="color:#66d9ef">:</span> [a]
+</span></span><span style="display:flex;"><span>  	<span style="color:#75715e">-- Defined in ‘GHC.Types’</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">instance</span> <span style="color:#66d9ef">Applicative</span> <span style="color:#66d9ef">[]</span> <span style="color:#75715e">-- Defined in ‘GHC.Base’</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">instance</span> <span style="color:#66d9ef">Eq</span> a <span style="color:#f92672">=&gt;</span> <span style="color:#66d9ef">Eq</span> [a] <span style="color:#75715e">-- Defined in ‘GHC.Classes’</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">instance</span> <span style="color:#66d9ef">Functor</span> <span style="color:#66d9ef">[]</span> <span style="color:#75715e">-- Defined in ‘GHC.Base’</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">instance</span> <span style="color:#66d9ef">Monad</span> <span style="color:#66d9ef">[]</span> <span style="color:#75715e">-- Defined in ‘GHC.Base’</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">instance</span> <span style="color:#66d9ef">Monoid</span> [a] <span style="color:#75715e">-- Defined in ‘GHC.Base’</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">instance</span> <span style="color:#66d9ef">Ord</span> a <span style="color:#f92672">=&gt;</span> <span style="color:#66d9ef">Ord</span> [a] <span style="color:#75715e">-- Defined in ‘GHC.Classes’</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">instance</span> <span style="color:#66d9ef">Semigroup</span> [a] <span style="color:#75715e">-- Defined in ‘GHC.Base’</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">instance</span> <span style="color:#66d9ef">Show</span> a <span style="color:#f92672">=&gt;</span> <span style="color:#66d9ef">Show</span> [a] <span style="color:#75715e">-- Defined in ‘GHC.Show’</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">instance</span> <span style="color:#66d9ef">Foldable</span> <span style="color:#66d9ef">[]</span> <span style="color:#75715e">-- Defined in ‘Data.Foldable’</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">instance</span> <span style="color:#66d9ef">MonadFail</span> <span style="color:#66d9ef">[]</span> <span style="color:#75715e">-- Defined in ‘Control.Monad.Fail’</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">instance</span> <span style="color:#66d9ef">Read</span> a <span style="color:#f92672">=&gt;</span> <span style="color:#66d9ef">Read</span> [a] <span style="color:#75715e">-- Defined in ‘GHC.Read’</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">instance</span> <span style="color:#66d9ef">Traversable</span> <span style="color:#66d9ef">[]</span> <span style="color:#75715e">-- Defined in ‘Data.Traversable’</span>
+</span></span></code></pre></div><p>As we can see: Yes. Quite a lot, actually. List is also an instance of Monad, now let&rsquo;s take a look at that.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-haskell" data-lang="haskell"><span style="display:flex;"><span><span style="color:#a6e22e">ghci</span><span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">:</span>info <span style="color:#66d9ef">Monad</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">type</span> <span style="color:#66d9ef">Monad</span> <span style="color:#f92672">::</span> (<span style="color:#f92672">*</span> <span style="color:#f92672">-&gt;</span> <span style="color:#f92672">*</span>) <span style="color:#f92672">-&gt;</span> <span style="color:#66d9ef">Constraint</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#66d9ef">Applicative</span> m <span style="color:#f92672">=&gt;</span> <span style="color:#66d9ef">Monad</span> m <span style="color:#66d9ef">where</span>
+</span></span><span style="display:flex;"><span>  (<span style="color:#f92672">&gt;&gt;=</span>) <span style="color:#f92672">::</span> m a <span style="color:#f92672">-&gt;</span> (a <span style="color:#f92672">-&gt;</span> m b) <span style="color:#f92672">-&gt;</span> m b
+</span></span><span style="display:flex;"><span>  (<span style="color:#f92672">&gt;&gt;</span>) <span style="color:#f92672">::</span> m a <span style="color:#f92672">-&gt;</span> m b <span style="color:#f92672">-&gt;</span> m b
+</span></span><span style="display:flex;"><span>  return <span style="color:#f92672">::</span> a <span style="color:#f92672">-&gt;</span> m a
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">{-# MINIMAL (&gt;&gt;=) #-}</span>
+</span></span><span style="display:flex;"><span>  	<span style="color:#75715e">-- Defined in ‘GHC.Base’</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">instance</span> <span style="color:#66d9ef">Monad</span> (<span style="color:#66d9ef">Either</span> e) <span style="color:#75715e">-- Defined in ‘Data.Either’</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">instance</span> <span style="color:#66d9ef">Monad</span> <span style="color:#66d9ef">[]</span> <span style="color:#75715e">-- Defined in ‘GHC.Base’</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">instance</span> <span style="color:#66d9ef">Monad</span> <span style="color:#66d9ef">Solo</span> <span style="color:#75715e">-- Defined in ‘GHC.Base’</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">instance</span> <span style="color:#66d9ef">Monad</span> <span style="color:#66d9ef">Maybe</span> <span style="color:#75715e">-- Defined in ‘GHC.Base’</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">instance</span> <span style="color:#66d9ef">Monad</span> <span style="color:#66d9ef">IO</span> <span style="color:#75715e">-- Defined in ‘GHC.Base’</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">instance</span> <span style="color:#66d9ef">Monad</span> ((<span style="color:#f92672">-&gt;</span>) r) <span style="color:#75715e">-- Defined in ‘GHC.Base’</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">instance</span> (<span style="color:#66d9ef">Monoid</span> a, <span style="color:#66d9ef">Monoid</span> b, <span style="color:#66d9ef">Monoid</span> c) <span style="color:#f92672">=&gt;</span> <span style="color:#66d9ef">Monad</span> ((,,,) a b c)
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">-- Defined in ‘GHC.Base’</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">instance</span> (<span style="color:#66d9ef">Monoid</span> a, <span style="color:#66d9ef">Monoid</span> b) <span style="color:#f92672">=&gt;</span> <span style="color:#66d9ef">Monad</span> ((,,) a b)
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">-- Defined in ‘GHC.Base’</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">instance</span> <span style="color:#66d9ef">Monoid</span> a <span style="color:#f92672">=&gt;</span> <span style="color:#66d9ef">Monad</span> ((,) a) <span style="color:#75715e">-- Defined in ‘GHC.Base’</span>
+</span></span></code></pre></div><p>See the so called bind operator (&raquo;=)? It takes a monad instance (m a - in our case a list) and a function that produces another monad instance
+(a -&gt; m b - in our case replicate) and returns a monad instance of b (m b). Remember the concatMap function and the similarities should be obvious,
+so let&rsquo;s try the bind operator to solve our problem.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-haskell" data-lang="haskell"><span style="display:flex;"><span><span style="color:#a6e22e">ghci</span><span style="color:#f92672">&gt;</span> [<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">3</span>] <span style="color:#f92672">&gt;&gt;=</span> replicate <span style="color:#ae81ff">4</span>
+</span></span><span style="display:flex;"><span>[<span style="color:#ae81ff">1</span>,<span style="color:#ae81ff">1</span>,<span style="color:#ae81ff">1</span>,<span style="color:#ae81ff">1</span>,<span style="color:#ae81ff">2</span>,<span style="color:#ae81ff">2</span>,<span style="color:#ae81ff">2</span>,<span style="color:#ae81ff">2</span>,<span style="color:#ae81ff">3</span>,<span style="color:#ae81ff">3</span>,<span style="color:#ae81ff">3</span>,<span style="color:#ae81ff">3</span>]
+</span></span></code></pre></div><p>Now that looks nice if you ask me! Complete solution as submitted below.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-haskell" data-lang="haskell"><span style="display:flex;"><span><span style="color:#a6e22e">f</span> <span style="color:#f92672">::</span> <span style="color:#66d9ef">Int</span> <span style="color:#f92672">-&gt;</span> [<span style="color:#66d9ef">Int</span>] <span style="color:#f92672">-&gt;</span> [<span style="color:#66d9ef">Int</span>]
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">f</span> n arr <span style="color:#f92672">=</span> <span style="color:#75715e">-- Complete this function</span>
+</span></span><span style="display:flex;"><span>     arr <span style="color:#f92672">&gt;&gt;=</span> replicate n
+</span></span><span style="display:flex;"><span><span style="color:#75715e">-- This part handles the Input and Output and can be used as it is. Do not modify this part.</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">main</span> <span style="color:#f92672">::</span> <span style="color:#66d9ef">IO</span> ()
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">main</span> <span style="color:#f92672">=</span> getContents <span style="color:#f92672">&gt;&gt;=</span>
+</span></span><span style="display:flex;"><span>       mapM_ print<span style="color:#f92672">.</span> (<span style="color:#a6e22e">\</span>(n<span style="color:#66d9ef">:</span>arr) <span style="color:#f92672">-&gt;</span> f n arr)<span style="color:#f92672">.</span> map read<span style="color:#f92672">.</span> words
+</span></span></code></pre></div>
+    </div>
+    <div class="post-footer">
+      
+    </div>
+  </article>
+
+    </main>
+  </body>
+</html>

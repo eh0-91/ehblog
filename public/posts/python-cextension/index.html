@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="en-us">
+  <head>
+    <title>Python: C extensions // ev-log</title>
+    <link rel="shortcut icon" href="/favicon.ico" />
+    <meta charset="utf-8" />
+    <meta name="generator" content="Hugo 0.149.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="author" content="John Doe" />
+    <meta name="description" content="" />
+    <link rel="stylesheet" href="/css/main.min.5b1fcc8902588589c4767187402a3c29f8b8d7a6fdef6d9f8f77045bb0d14fee.css" />
+    
+
+    
+    
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Python: C extensions">
+  <meta name="twitter:description" content="Python series, part 2: C Extensions In the second part of the Python series, we will benchmark our Python code and see if we can speed it up by writing a C extension. For this purpose, I wrote a function which, given a lower and upper bound, returns the number of prime numbers in the given range. Also I wrote a small, simple function to measure how much it takes to run the function ten times. The code is pretty straightforward, see below:">
+
+    <meta property="og:url" content="/posts/python-cextension/">
+  <meta property="og:site_name" content="ev-log">
+  <meta property="og:title" content="Python: C extensions">
+  <meta property="og:description" content="Python series, part 2: C Extensions In the second part of the Python series, we will benchmark our Python code and see if we can speed it up by writing a C extension. For this purpose, I wrote a function which, given a lower and upper bound, returns the number of prime numbers in the given range. Also I wrote a small, simple function to measure how much it takes to run the function ten times. The code is pretty straightforward, see below:">
+  <meta property="og:locale" content="en_us">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2023-01-10T21:18:34+02:00">
+    <meta property="article:modified_time" content="2023-01-10T21:18:34+02:00">
+
+
+  </head>
+  <body>
+    <header class="app-header">
+      <a href="/"><img class="app-header-avatar" src="/avatar.jpg" alt="John Doe" /></a>
+      <span class="app-header-title">ev-log</span>
+      <p>Welcome to my blog! I&#39;m a hobbyist and will mostly write about basic topics related to programming and devops as I learn along the way.</p>
+      <div class="app-header-social">
+        
+          <a href="https://github.com/eh0-91" target="_blank" rel="noreferrer noopener me">
+            <svg class="icon icon-github" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><title>github</title><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>
+          </a>
+        
+      </div>
+    </header>
+    <main class="app-container">
+      
+  <article class="post">
+    <header class="post-header">
+      <h1 class ="post-title">Python: C extensions</h1>
+      <div class="post-meta">
+        <div>
+          <svg class="icon icon-calendar" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><title>calendar</title><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+          Jan 10, 2023
+        </div>
+        <div>
+          <svg class="icon icon-clock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><title>clock</title><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+          6 min read
+        </div>
+      </div>
+    </header>
+    <div class="post-content">
+      <h1 id="python-series-part-2-c-extensions">Python series, part 2: C Extensions</h1>
+<p>In the second part of the Python series, we will benchmark our Python code and see if we can speed it up
+by writing a C extension. For this purpose, I wrote a function which, given a lower and upper bound,
+returns the number of prime numbers in the given range. Also I wrote a small, simple function to measure
+how much it takes to run the function ten times. The code is pretty straightforward, see below:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">import</span> time
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>lower <span style="color:#f92672">=</span> <span style="color:#ae81ff">1_000_000</span>
+</span></span><span style="display:flex;"><span>upper <span style="color:#f92672">=</span> <span style="color:#ae81ff">1_001_000</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">time_measured</span>(func):
+</span></span><span style="display:flex;"><span>    start <span style="color:#f92672">=</span> time<span style="color:#f92672">.</span>perf_counter()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> range(<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">11</span>):
+</span></span><span style="display:flex;"><span>        func(lower, upper)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    duration <span style="color:#f92672">=</span> time<span style="color:#f92672">.</span>perf_counter() <span style="color:#f92672">-</span> start
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> duration
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">count_primes_py</span>(lower, upper):
+</span></span><span style="display:flex;"><span>    count <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> num <span style="color:#f92672">in</span> range(lower, upper<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>):
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> num <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">1</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> range(<span style="color:#ae81ff">2</span>, num):
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">if</span> (num <span style="color:#f92672">%</span> i) <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>:
+</span></span><span style="display:flex;"><span>                    <span style="color:#66d9ef">break</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">elif</span> (i<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>) <span style="color:#f92672">==</span> num:
+</span></span><span style="display:flex;"><span>                    count <span style="color:#f92672">+=</span> <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> count
+</span></span></code></pre></div><p>As you can see, I chose rather big numbers for the number range, so that the program doesn&rsquo;t finish too fast.
+Also, if you take a closer look inside the count_primes_py function, inside the second range, I wrote it as:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> range(<span style="color:#ae81ff">2</span>, num):
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (num <span style="color:#f92672">%</span> i) <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">break</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">elif</span> (i<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>) <span style="color:#f92672">==</span> num:
+</span></span><span style="display:flex;"><span>        count <span style="color:#f92672">+=</span> <span style="color:#ae81ff">1</span>
+</span></span></code></pre></div><p>This is actually not optimal in Python since Python has a for-else construct that, on my machine for the given example,
+basically runs twice as fast:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> range(<span style="color:#ae81ff">2</span>, num):
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (num <span style="color:#f92672">%</span> i) <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">break</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">else</span>:
+</span></span><span style="display:flex;"><span>    count <span style="color:#f92672">+=</span> <span style="color:#ae81ff">1</span>
+</span></span></code></pre></div><p>I chose the former because I can map it easily to C for a fair comparison. Spoiler: The C extension would still run
+much faster, even if I used the for-else construct! That being out the way, let&rsquo;s look at our C code. Before we
+look at the function itself, let&rsquo;s first look at some boilerplate we have to setup. If you want to dig deeper
+for yourself, here is the official <a href="https://docs.python.org/3/c-api/index.html">API reference</a> and here is a more
+gentle, also official <a href="https://docs.python.org/3/extending/extending.html">introduction</a>. We will cover only
+a small subset of the API and won&rsquo;t touch topics like reference counting. Maybe in another post in the future!</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-C" data-lang="C"><span style="display:flex;"><span><span style="color:#75715e">#define PY_SSIZE_T_CLEAN
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;Python.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">static</span> PyMethodDef methods[] <span style="color:#f92672">=</span> {
+</span></span><span style="display:flex;"><span>    { <span style="color:#e6db74">&#34;count_primes_c&#34;</span>, count_primes_c, METH_VARARGS, <span style="color:#e6db74">&#34;Counting primes!&#34;</span> },
+</span></span><span style="display:flex;"><span>    { NULL, NULL, <span style="color:#ae81ff">0</span>, NULL}
+</span></span><span style="display:flex;"><span>};
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">static</span> <span style="color:#66d9ef">struct</span> PyModuleDef primenumbers <span style="color:#f92672">=</span> {
+</span></span><span style="display:flex;"><span>    PyModuleDef_HEAD_INIT,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;primenumbers&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;Prime numbers within a given range&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>,
+</span></span><span style="display:flex;"><span>    methods
+</span></span><span style="display:flex;"><span>};
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>PyMODINIT_FUNC <span style="color:#a6e22e">PyInit_primenumbers</span>(){
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">PyModule_Create</span>(<span style="color:#f92672">&amp;</span>primenumbers);
+</span></span><span style="display:flex;"><span>};
+</span></span></code></pre></div><p>As you can see, we first define PY_SSIZE_T_CLEAN and include the Python.h header. You should include it first,
+before any other includes. From the official docs:</p>
+<pre tabindex="0"><code>Since Python may define some pre-processor definitions which affect the standard headers on some systems,
+you must include Python.h before any standard headers are included.
+It is recommended to always define PY_SSIZE_T_CLEAN before including Python.h
+</code></pre><p>As you can see, first we specify our methods. &lsquo;{ NULL, NULL, 0, NULL}&rsquo; just gets included, we can ignore it.
+In our own definition you can see that we want our method to be called count_primes_c and we will use that exact
+same name. Next we pass the METH_VARAGS flag, which in most cases will be correct, but there are other options,
+feel free to check out the API reference! And last we pass a description as a string.
+Next we have our module definition. As you can see it&rsquo;s a static struct with the following fields:
+PyModuleDef_HEAD_INIT is a macro that we include, then follows the name of our module as a string and a description,
+also as a string. Then you can see a -1. Here you can give it the, per documentation:</p>
+<pre tabindex="0"><code>size of per-interpreter state of the module, or -1 if the module keeps state in global variables.
+</code></pre><p>In our case -1 works just fine. In the end we pass our methods array and that&rsquo;s it for our module definition.
+The last thing we have to do is to return our module with PyModule_Create(&amp;primenumbers) with our PyMODINIT_FUNC.
+Again, feel free to dig deeper in the API reference. With the boilerplate out of the way, let&rsquo;s actually
+implement our count_primes_c function!</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-C" data-lang="C"><span style="display:flex;"><span>PyObject <span style="color:#f92672">*</span><span style="color:#a6e22e">count_primes_c</span>(PyObject <span style="color:#f92672">*</span>self, PyObject <span style="color:#f92672">*</span>args){
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> lower;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> upper;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> count <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">PyArg_ParseTuple</span>(args, <span style="color:#e6db74">&#34;ii&#34;</span>, <span style="color:#f92672">&amp;</span>lower, <span style="color:#f92672">&amp;</span>upper);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">int</span> num <span style="color:#f92672">=</span> lower; num <span style="color:#f92672">&lt;=</span> upper; num<span style="color:#f92672">++</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> (num <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">1</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">int</span> i <span style="color:#f92672">=</span> <span style="color:#ae81ff">2</span>; i <span style="color:#f92672">&lt;</span> num; i<span style="color:#f92672">++</span>) {
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">if</span> ((num <span style="color:#f92672">%</span> i) <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>) {
+</span></span><span style="display:flex;"><span>                    <span style="color:#66d9ef">break</span>;
+</span></span><span style="display:flex;"><span>                } <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span> ((i<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>) <span style="color:#f92672">==</span> num) {
+</span></span><span style="display:flex;"><span>                    count<span style="color:#f92672">++</span>;
+</span></span><span style="display:flex;"><span>                }
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">PyLong_FromLong</span>((<span style="color:#66d9ef">long</span>)count);
+</span></span><span style="display:flex;"><span>};
+</span></span></code></pre></div><p>A pretty straightforward implemantation of the equivalent Python function. You can see that the input parameters
+and the return type are all PyObjects. We parse the args input with PyArg_ParseTuple(). There, we pass args and
+a &ldquo;magic&rdquo; string, where i stands for integer. Every type will have one (or more!) chars that represent it. Then
+we pass our variables as references. We return a PyObject with the PyLong_FromLong function, where we first have to
+cast our int count as long. That&rsquo;s it. We compile the code with
+&lsquo;gcc primenumbers.c -shared -o primenumbers.so -I/usr/include/python3.10&rsquo; and import it in our Python code with
+&lsquo;import primenumbers&rsquo;. Now let&rsquo;s measure our pure Python and our C extension implementation with the addition of the
+following code inside our Python file:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-Python" data-lang="Python"><span style="display:flex;"><span><span style="color:#75715e"># Pure Python ---------------</span>
+</span></span><span style="display:flex;"><span>print(<span style="color:#e6db74">&#34;Pure Python version:&#34;</span>)
+</span></span><span style="display:flex;"><span>duration_py <span style="color:#f92672">=</span> time_measured(count_primes_py)
+</span></span><span style="display:flex;"><span>print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;There are </span><span style="color:#e6db74">{</span>count_primes_py(lower, upper)<span style="color:#e6db74">}</span><span style="color:#e6db74"> prime numbers between </span><span style="color:#e6db74">{</span>lower<span style="color:#e6db74">}</span><span style="color:#e6db74"> and </span><span style="color:#e6db74">{</span>upper<span style="color:#e6db74">}</span><span style="color:#e6db74">.&#34;</span>)
+</span></span><span style="display:flex;"><span>print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;Running 10 times, on average count_primes_py took </span><span style="color:#e6db74">{</span>duration_py<span style="color:#f92672">/</span><span style="color:#ae81ff">10</span><span style="color:#e6db74">}</span><span style="color:#e6db74"> seconds to run.&#34;</span>)
+</span></span><span style="display:flex;"><span>print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;Altogether that makes it about </span><span style="color:#e6db74">{</span>int(duration_py)<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span><span style="color:#e6db74">}</span><span style="color:#e6db74"> seconds to complete.&#34;</span>)
+</span></span><span style="display:flex;"><span>print()
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># C  Extension --------------</span>
+</span></span><span style="display:flex;"><span>print(<span style="color:#e6db74">&#34;C extension version:&#34;</span>)
+</span></span><span style="display:flex;"><span>duration_c <span style="color:#f92672">=</span> time_measured(primenumbers<span style="color:#f92672">.</span>count_primes_c)
+</span></span><span style="display:flex;"><span>print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;There are </span><span style="color:#e6db74">{</span>primenumbers<span style="color:#f92672">.</span>count_primes_c(lower, upper)<span style="color:#e6db74">}</span><span style="color:#e6db74"> prime numbers between </span><span style="color:#e6db74">{</span>lower<span style="color:#e6db74">}</span><span style="color:#e6db74"> and </span><span style="color:#e6db74">{</span>upper<span style="color:#e6db74">}</span><span style="color:#e6db74">.&#34;</span>)
+</span></span><span style="display:flex;"><span>print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;Running 10 times, on average count_primes_c took </span><span style="color:#e6db74">{</span>duration_c<span style="color:#f92672">/</span><span style="color:#ae81ff">10</span><span style="color:#e6db74">}</span><span style="color:#e6db74"> seconds to run.&#34;</span>)
+</span></span><span style="display:flex;"><span>print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;Altogether that makes it about </span><span style="color:#e6db74">{</span>int(duration_c)<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span><span style="color:#e6db74">}</span><span style="color:#e6db74"> seconds to complete.&#34;</span>)
+</span></span><span style="display:flex;"><span>print()
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Comparison</span>
+</span></span><span style="display:flex;"><span>print(<span style="color:#e6db74">&#34;Comparison:&#34;</span>)
+</span></span><span style="display:flex;"><span>print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;The function implemented as a C extension runs about </span><span style="color:#e6db74">{</span>int((duration_py<span style="color:#f92672">/</span><span style="color:#ae81ff">10</span>)<span style="color:#f92672">/</span>(duration_c<span style="color:#f92672">/</span><span style="color:#ae81ff">10</span>))<span style="color:#e6db74">}</span><span style="color:#e6db74"> times faster.&#34;</span>)
+</span></span></code></pre></div><p>We call &lsquo;python3 primenumbers.py&rsquo; in our terminal and we get:</p>
+<pre tabindex="0"><code>Pure Python version:
+There are 75 prime numbers between 1000000 and 1001000.
+Running 10 times, on average count_primes_py took 4.484800785299922 seconds to run.
+Altogether that makes it about 45 seconds to complete.
+
+C extension version:
+There are 75 prime numbers between 1000000 and 1001000.
+Running 10 times, on average count_primes_c took 0.24523699020010098 seconds to run.
+Altogether that makes it about 3 seconds to complete.
+
+Comparison:
+The function implemented as a C extension runs about 18 times faster.
+</code></pre><p>A massive difference! If you recall, in the beginning I told you how the for-else construct in Python leads to the
+code being run in about half the time, which would mean the C extension function still runs almost 10 times as fast.
+In any case, this shows how, if your code performs cpu heavy tasks, it can be beneficial to profile it and
+implement specific functions in C. Although if you are fine with the performance of your Python code you obviously
+should not introduce complexity by including a C extension. Next time, we will take a look at decorators in Python.</p>
+
+    </div>
+    <div class="post-footer">
+      
+    </div>
+  </article>
+
+    </main>
+  </body>
+</html>
