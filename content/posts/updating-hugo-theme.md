@@ -31,4 +31,4 @@ theme: "hugo-theme-m10c"
 
 Last thing left is to just commit my changes and who would have thought, building the site with Cloudflare pages
 is working again. Otherwise you would not be reading this post. :P I hope I'll find some more time blogging
-in the foreseeable feature.
+in the foreseeable future.
